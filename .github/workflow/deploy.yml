@@ -1,0 +1,62 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: "Terraform and Deploy"
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: "ap-south-1" # Specify your AWS region
+      TF_VERSION: "1.9.8" # Specify your desired Terraform version
+
+    steps:
+      - name: "Checkout GitHub repository"
+        uses: actions/checkout@v3 # Use latest version of checkout
+
+      # Configure AWS credentials (using aws-actions/configure-aws-credentials@v2)
+      - name: "Configure AWS credentials"
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Verify AWS credentials are working (debugging step to ensure AWS access)
+      - name: "Verify AWS CLI"
+        run: |
+          aws sts get-caller-identity
+
+      # Set up Terraform with desired version (use hashicorp/setup-terraform@v1)
+      - name: "Set up Terraform"
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # Initialize Terraform
+      - name: "Terraform Init"
+        run: terraform init
+
+      # # Format Terraform files (check for proper formatting)
+      # - name: "Terraform Format"
+      #   run: terraform fmt -check
+
+      # Validate Terraform configuration
+      - name: "Terraform Validate"
+        run: terraform validate
+
+      # Plan Terraform changes
+      - name: "Terraform Plan"
+        run: terraform plan -out=tfplan
+
+      # Apply Terraform changes (only on eks-modules branch)
+      - name: "Terraform Apply"
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
