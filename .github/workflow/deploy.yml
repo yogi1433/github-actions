@@ -44,10 +44,6 @@ jobs:
       - name: "Terraform Init"
         run: terraform init
 
-      # # Format Terraform files (check for proper formatting)
-      # - name: "Terraform Format"
-      #   run: terraform fmt -check
-
       # Validate Terraform configuration
       - name: "Terraform Validate"
         run: terraform validate
