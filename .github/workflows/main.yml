@@ -34,7 +34,7 @@ jobs:
         run: |
           aws sts get-caller-identity
 
-      # Set up Terraform with desired version   (use hashicorp/setup-terraform@v1)
+      # Set up Terraform with desired version (use hashicorp/setup-terraform@v1)
       - name: "Set up Terraform"
         uses: hashicorp/setup-terraform@v1
         with:
@@ -58,5 +58,5 @@ jobs:
 
       # Apply Terraform changes (only on eks-modules branch)
       - name: "Terraform Apply"
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/eks-modules'
         run: terraform apply -auto-approve tfplan
