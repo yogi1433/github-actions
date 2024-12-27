@@ -58,5 +58,5 @@ jobs:
 
       # Apply Terraform changes (only on eks-modules branch)
       - name: "Terraform Apply"
-        if: github.ref == 'refs/heads/eks-modules'
+        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
